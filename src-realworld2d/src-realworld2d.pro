@@ -1,8 +1,13 @@
 include(../shared.pri)
 
 TEMPLATE = lib
+TARGET = $$REALWORLD2D_SRC_TARGET
+DESTDIR = $$REALWORLD2D_BINARY_PATH
 
 PRECOMPILED_HEADER += precompiled.h
+
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib -lSDL2
 
 HEADERS += \
     realworld2d.h \
@@ -13,8 +18,12 @@ HEADERS += \
     _global_macros.h \
     _global_memory.h \
     _global_types.h \
-    point2d.h
+    point2d.h \
+    timer.h \
+    hashtable.h
 
 SOURCES += \
-    point2d.c
+    point2d.c \
+    timer.c \
+    hashtable.c
 

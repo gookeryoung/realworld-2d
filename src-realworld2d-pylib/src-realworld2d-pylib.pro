@@ -4,7 +4,8 @@ TEMPLATE = lib
 TARGET = $$REALWORLD2D_PYLIB_TARGET
 DESTDIR = $$REALWORLD2D_BINARY_PATH
 
-INCLUDEPATH += $$REALWORLD2D_SRC_PATH \
+INCLUDEPATH += /usr/local/include \
+    $$REALWORLD2D_SRC_PATH \
     $$REALWORLD2D_3RDSRC_PATH
 
 macx: {
@@ -17,4 +18,5 @@ HEADERS += \
     scriptengine.h
 
 SOURCES += \
-    scriptengine.c
+    scriptengine.c \
+    capi_timer.c
