@@ -16,7 +16,6 @@ timer_new() {
 
 void
 timer_del(timer *t) {
-    GK_ASSERT(t);
     GK_DELETE(t);
 }
 

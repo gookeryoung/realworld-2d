@@ -1,5 +1,7 @@
 #include <Python.h>
 
+#include "scriptengine.h"
+
 void
 scriptengine_init() {
     Py_Initialize();
@@ -12,6 +14,9 @@ scriptengine_init() {
     /* add 'scripts' folder to python environment */
     PyRun_SimpleString("import sys");
     PyRun_SimpleString("sys.path.append('./')");
+
+    //
+    capi_load_timer();
 }
 
 void

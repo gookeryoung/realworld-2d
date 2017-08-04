@@ -20,6 +20,15 @@ hashnode_assign(hashnode *n, gint32 key, void *data, hashnode *prev, hashnode *n
     n->next = next;
 }
 
+void hashnode_del(hashnode *n, del_func deleter) {
+    deleter(n->data);
+
+    n->prev = NULL;
+    n->next = NULL;
+
+    GK_DELETE(n);
+}
+
 hashtable *
 hashtable_new(gint32 size) {
     GK_ASSERT(size >= 0);
@@ -36,7 +45,7 @@ hashtable_new(gint32 size) {
 }
 
 void
-hashtable_del(hashtable *ht) {
+hashtable_del(hashtable *ht, del_func deleter) {
     GK_ASSERT(ht);
 
     hashnode *p = NULL;
@@ -56,11 +65,11 @@ hashtable_del(hashtable *ht) {
 
         while (p->prev) {
             tmp = p;
-            GK_DELETE(tmp);
+            hashnode_del(tmp, deleter);
 
             p = p->prev;
         }
-        GK_DELETE(p);
+        hashnode_del(p, deleter);
     }
 
     GK_DELETE(ht->nodes);
@@ -167,7 +176,7 @@ hashtable_search(hashtable *ht, gint32 key) {
     return node->data;
 }
 
-gbool hashtable_remove(hashtable *ht, gint32 key) {
+gbool hashtable_remove(hashtable *ht, gint32 key, del_func deleter) {
     GK_ASSERT(ht);
 
     hashnode *p = __hashtable_search_node(ht, key);
@@ -189,50 +198,50 @@ gbool hashtable_remove(hashtable *ht, gint32 key) {
         }
     }
 
-    GK_DELETE(p);
+    hashnode_del(p, deleter);
     p = NULL;
     --ht->cur_count;
 
     return GKTRUE;
 }
 
-//#undef main
-//int main(int argc, char *argv[]) {
-//    hashtable *ht = hashtable_new(30);
-//    GK_ASSERT(0 == ht->cur_count);
+#undef main
+int main(int argc, char *argv[]) {
+    hashtable *ht = hashtable_new(30);
+    GK_ASSERT(0 == ht->cur_count);
 
-//    GK_UNUSED_PARAM(argc);
-//    GK_UNUSED_PARAM(argv);
+    GK_UNUSED_PARAM(argc);
+    GK_UNUSED_PARAM(argv);
 
-//    gint32 data = 1003333;
-//    gint32 key = hashtable_insert(ht, &data);
-//    GK_ASSERT(data == *(gint32*)hashtable_search(ht, key));
-//    GK_ASSERT(1 == ht->cur_count);
+    gint32 data = 1003333;
+    gint32 key = hashtable_insert(ht, &data);
+    GK_ASSERT(data == *(gint32*)hashtable_search(ht, key));
+    GK_ASSERT(1 == ht->cur_count);
 
-//    char *str = "hello";
-//    gint32 key2 = hashtable_insert(ht, str);
-//    GK_ASSERT(2 == ht->cur_count);
-//    GK_ASSERT(0 == strcmp(str, (char*)hashtable_search(ht, key2)));
+    char *str = "hello";
+    gint32 key2 = hashtable_insert(ht, str);
+    GK_ASSERT(2 == ht->cur_count);
+    GK_ASSERT(0 == strcmp(str, (char*)hashtable_search(ht, key2)));
 
-//    printf("%d\t%d\n", key, key2);
+    printf("%d\t%d\n", key, key2);
 
-//    GK_ASSERT(GKTRUE == hashtable_remove(ht, key2));
-//    GK_ASSERT(1 == ht->cur_count);
+    GK_ASSERT(GKTRUE == hashtable_remove(ht, key2, GK_DELETE));
+    GK_ASSERT(1 == ht->cur_count);
 
-//    char *str3 = "test";
-//    int key3 = hashtable_insert(ht, str3);
-//    GK_ASSERT(2 == ht->cur_count);
-//    GK_ASSERT(0 == strcmp(str3, (char*)hashtable_search(ht, key3)));
+    char *str3 = "test";
+    int key3 = hashtable_insert(ht, str3);
+    GK_ASSERT(2 == ht->cur_count);
+    GK_ASSERT(0 == strcmp(str3, (char*)hashtable_search(ht, key3)));
 
-//    puts((char*)hashtable_search(ht, key3));
+    puts((char*)hashtable_search(ht, key3));
 
-//    GK_ASSERT(GKTRUE == hashtable_remove(ht, key2));
-//    GK_ASSERT(1 == ht->cur_count);
+    GK_ASSERT(GKTRUE == hashtable_remove(ht, key2, GK_DELETE));
+    GK_ASSERT(1 == ht->cur_count);
 
-//    GK_ASSERT(GKTRUE == hashtable_remove(ht, key));
-//    GK_ASSERT(0 == ht->cur_count);
+    GK_ASSERT(GKTRUE == hashtable_remove(ht, key, GK_DELETE));
+    GK_ASSERT(0 == ht->cur_count);
 
-//    hashtable_del(ht);
+    hashtable_del(ht, GK_DELETE);
 
-//    return 0;
-//}
+    return 0;
+}

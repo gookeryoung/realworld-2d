@@ -9,4 +9,8 @@ int scriptengine_runstr(const char *str);
 
 int scriptengine_runfile(const char *file_name);
 
+
+// capi interface
+void capi_load_timer(void);
+
 #endif // SCRIPTENGINE_H

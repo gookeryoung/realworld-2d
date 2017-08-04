@@ -14,6 +14,8 @@ typedef struct hashtable_ {
     hashnode **nodes;
 } hashtable;
 
+typedef void *del_func(void *);
+
 ///
 /// \brief  Generate a new hashtable.
 ///
@@ -36,7 +38,7 @@ hashtable *hashtable_new(gint32 size);
 /// \endcode
 /// \param  ht      Pointer to a hashtable.
 ///
-void hashtable_del(hashtable *ht);
+void hashtable_del(hashtable *ht, del_func deleter);
 
 ///
 /// \brief  Insert a element into a hashtable.
@@ -78,7 +80,7 @@ void *hashtable_search(hashtable *ht, gint32 key);
 ///
 /// \return         Status of remove action, True if success.
 ///
-gbool hashtable_remove(hashtable *ht, gint32 key);
+gbool hashtable_remove(hashtable *ht, gint32 key, del_func deleter);
 
 GK_END_HEADER
 
