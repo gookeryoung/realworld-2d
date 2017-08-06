@@ -7,7 +7,7 @@ DESTDIR = $$REALWORLD2D_BINARY_PATH
 PRECOMPILED_HEADER += precompiled.h
 
 INCLUDEPATH += /usr/local/include
-LIBS += -L/usr/local/lib -lSDL2
+LIBS += -L/usr/local/lib -lSDL -lSDL_image -lSDL_ttf
 
 HEADERS += \
     realworld2d.h \
@@ -23,12 +23,34 @@ HEADERS += \
     event.h \
     rect.h \
     graphics.h \
-    animation.h
+    animation.h \
+    charactermotion.h \
+    screen.h \
+    surface.h \
+    palette.h \
+    sprite.h \
+    gamemap.h \
+    gamemapground.h \
+    stringutils.h \
+    graphicssystem.h \
+    font.h \
+    character.h
 
 SOURCES += \
     timer.c \
     hashtable.c \
     event.c \
     rect.c \
-    animation.c
+    animation.c \
+    charactermotion.c \
+    screen.c \
+    surface.c \
+    palette.c \
+    sprite.c \
+    gamemap.c \
+    gamemapground.c \
+    stringutils.c \
+    graphicssystem.c \
+    font.c \
+    character.c
 

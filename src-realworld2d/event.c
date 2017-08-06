@@ -1,10 +1,10 @@
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 #include "event.h"
 
 static event_type
 _sdl_to_event_type(SDL_EventType type) {
     switch(type) {
-    //    case SDL_ACTIVEEVENT: return ET_ACTIVEEVENT;
+    case SDL_ACTIVEEVENT: return ET_ACTIVEEVENT;
     case SDL_KEYDOWN: return ET_KEYDOWN;
     case SDL_KEYUP: return ET_KEYUP;
     case SDL_MOUSEMOTION: return ET_MOUSEMOTION;
@@ -17,17 +17,17 @@ _sdl_to_event_type(SDL_EventType type) {
     case SDL_JOYBUTTONUP: return ET_JOYBUTTONUP;
     case SDL_QUIT: return ET_QUIT;
     case SDL_SYSWMEVENT: return ET_SYSWMEVENT;
-        //    case SDL_EVENT_RESERVEDA: return ET_EVENT_RESERVEDA;
-        //    case SDL_EVENT_RESERVEDB: return ET_EVENT_RESERVEDB;
-        //    case SDL_VIDEORESIZE: return ET_VIDEORESIZE;
-        //    case SDL_VIDEOEXPOSE: return ET_VIDEOEXPOSE;
+    case SDL_EVENT_RESERVEDA: return ET_EVENT_RESERVEDA;
+    case SDL_EVENT_RESERVEDB: return ET_EVENT_RESERVEDB;
+    case SDL_VIDEORESIZE: return ET_VIDEORESIZE;
+    case SDL_VIDEOEXPOSE: return ET_VIDEOEXPOSE;
     case SDL_USEREVENT: return ET_USEREVENT;
     default: return ET_NOEVENT;
     }
 }
 
 static key_sym
-_sdl_to_keysym(SDL_Keycode key) {
+_sdl_to_keysym(SDLKey key) {
     switch(key) {
     case SDLK_ESCAPE:       return KEY_ESCAPE;
     case SDLK_RETURN:       return KEY_RETURN;
@@ -80,7 +80,7 @@ _sdl_to_keysym(SDL_Keycode key) {
     case SDLK_F10:          return KEY_F10;
     case SDLK_F11:          return KEY_F11;
     case SDLK_F12:          return KEY_F12;
-        //    case SDLK_PRINT:        return KEY_PRINT;
+    case SDLK_PRINT:        return KEY_PRINT;
     case SDLK_LEFT:         return KEY_LEFT;
     case SDLK_RIGHT:        return KEY_RIGHT;
     case SDLK_UP:           return KEY_UP;
@@ -265,11 +265,13 @@ gbool event_handle_events(event *et) {
         }
         // mouse button events
         if(SDL_MOUSEBUTTONDOWN == et->data->type || SDL_MOUSEBUTTONUP == et->data->type) {
-            _handle_mousebutton(et, &et->data->button);
-        }
-        // mouse wheel
-        if(SDL_MOUSEWHEEL == et->data->type) {
-            _handle_mousewheel(et, &et->data->button);
+            // mouse wheel
+            if(SDL_BUTTON_WHEELDOWN == et->data->button.button || SDL_BUTTON_WHEELUP == et->data->button.button) {
+                _handle_mousewheel(et, &et->data->button);
+                break;
+            }  else {
+                _handle_mousebutton(et, &et->data->button);
+            }
         }
         // exit
         if(SDL_QUIT == et->data->type){

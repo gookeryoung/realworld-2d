@@ -62,7 +62,7 @@ GK_BEGIN_HEADER
 #define GK_BYTE_SWAP32(val)    SDL_Swap32(val)
 #endif
 
-#define color SDL_Color
+#define color_type SDL_Color
 
 GK_END_HEADER
 
