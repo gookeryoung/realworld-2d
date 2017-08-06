@@ -7,7 +7,7 @@ GK_BEGIN_HEADER
 
 typedef struct hashnode_ hashnode;  // private implemention
 
-typedef struct hashtable_{
+typedef struct hashtable_ {
     gint32 size;
     gint32 cur_count;
 

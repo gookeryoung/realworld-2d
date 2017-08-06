@@ -18,12 +18,14 @@ HEADERS += \
     _global_macros.h \
     _global_memory.h \
     _global_types.h \
-    point2d.h \
     timer.h \
-    hashtable.h
+    hashtable.h \
+    event.h \
+    rect.h
 
 SOURCES += \
-    point2d.c \
     timer.c \
-    hashtable.c
+    hashtable.c \
+    event.c \
+    rect.c
 

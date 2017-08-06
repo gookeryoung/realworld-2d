@@ -4,7 +4,7 @@ static const gint32 RANDOM_MAGIC_TAIL = 1;
 static const gint32 RANDOM_MAGIC_FACTOR = 2;
 static const gint32 RANDOM_BOUND = 100;
 
-struct hashnode_{
+struct hashnode_ {
     gint32 key;
     void *data;
 
