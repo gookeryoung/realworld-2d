@@ -1,11 +1,11 @@
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "event.h"
 
-static EventType
+static event_type
 _sdl_to_event_type(SDL_EventType type) {
     switch(type) {
-    case SDL_ACTIVEEVENT: return ET_ACTIVEEVENT;
+    //    case SDL_ACTIVEEVENT: return ET_ACTIVEEVENT;
     case SDL_KEYDOWN: return ET_KEYDOWN;
     case SDL_KEYUP: return ET_KEYUP;
     case SDL_MOUSEMOTION: return ET_MOUSEMOTION;
@@ -18,17 +18,17 @@ _sdl_to_event_type(SDL_EventType type) {
     case SDL_JOYBUTTONUP: return ET_JOYBUTTONUP;
     case SDL_QUIT: return ET_QUIT;
     case SDL_SYSWMEVENT: return ET_SYSWMEVENT;
-    case SDL_EVENT_RESERVEDA: return ET_EVENT_RESERVEDA;
-    case SDL_EVENT_RESERVEDB: return ET_EVENT_RESERVEDB;
-    case SDL_VIDEORESIZE: return ET_VIDEORESIZE;
-    case SDL_VIDEOEXPOSE: return ET_VIDEOEXPOSE;
+        //    case SDL_EVENT_RESERVEDA: return ET_EVENT_RESERVEDA;
+        //    case SDL_EVENT_RESERVEDB: return ET_EVENT_RESERVEDB;
+        //    case SDL_VIDEORESIZE: return ET_VIDEORESIZE;
+        //    case SDL_VIDEOEXPOSE: return ET_VIDEOEXPOSE;
     case SDL_USEREVENT: return ET_USEREVENT;
     default: return ET_NOEVENT;
     }
 }
 
-static KeySym
-_sdl_to_keysym(SDLKey key) {
+static key_sym
+_sdl_to_keysym(SDL_Keycode key) {
     switch(key) {
     case SDLK_ESCAPE:       return KEY_ESCAPE;
     case SDLK_RETURN:       return KEY_RETURN;
@@ -81,7 +81,7 @@ _sdl_to_keysym(SDLKey key) {
     case SDLK_F10:          return KEY_F10;
     case SDLK_F11:          return KEY_F11;
     case SDLK_F12:          return KEY_F12;
-    case SDLK_PRINT:        return KEY_PRINT;
+        //    case SDLK_PRINT:        return KEY_PRINT;
     case SDLK_LEFT:         return KEY_LEFT;
     case SDLK_RIGHT:        return KEY_RIGHT;
     case SDLK_UP:           return KEY_UP;
@@ -126,11 +126,11 @@ _sdl_to_keysym(SDLKey key) {
     }
 }
 
-Event *
+event *
 event_get(void) {
-    Event *ret;
+    event *ret = NULL;
 
-    GK_NEW(ret, Event);
+    GK_NEW(ret, event);
     GK_NEW(ret->data, SDL_Event);
 
     ret->mouse_motion = GKFALSE;
@@ -167,19 +167,19 @@ event_get(void) {
 }
 
 void
-event_del(Event *event) {
+event_del(event *event) {
     GK_DELETE(event->data);
     GK_DELETE(event);
 }
 
 void
-_handle_keyboard(Event *et, SDL_KeyboardEvent *kb, gbool pressed) {
+_handle_keyboard(event *et, SDL_KeyboardEvent *kb, gbool pressed) {
     et->key_pressed = pressed;
     et->key_value = _sdl_to_keysym(kb->keysym.sym);
 }
 
 void
-_handle_mousemotion(Event *et, SDL_MouseMotionEvent *mm) {
+_handle_mousemotion(event *et, SDL_MouseMotionEvent *mm) {
     et->mouse_state = mm->state;
     et->mouse_motion = GKTRUE;
     et->mouse_cu.x = mm->x;
@@ -187,7 +187,7 @@ _handle_mousemotion(Event *et, SDL_MouseMotionEvent *mm) {
 }
 
 void
-_handle_mousewheel(Event *et, SDL_MouseButtonEvent *mb) {
+_handle_mousewheel(event *et, SDL_MouseButtonEvent *mb) {
     et->mouse_pressed = (mb->state == SDL_PRESSED);
     et->mouse_button = mb->button;
 
@@ -204,7 +204,7 @@ _handle_mousewheel(Event *et, SDL_MouseButtonEvent *mb) {
 }
 
 void
-_handle_mousebutton(Event *et, SDL_MouseButtonEvent *mb) {
+_handle_mousebutton(event *et, SDL_MouseButtonEvent *mb) {
     et->mouse_pressed = (mb->state == SDL_PRESSED);
     et->mouse_button = mb->button;
     et->mouse_cu.x = mb->x;
@@ -247,7 +247,7 @@ _handle_mousebutton(Event *et, SDL_MouseButtonEvent *mb) {
     }
 }
 
-gbool event_handle_events(Event *et) {
+gbool event_handle_events(event *et) {
     et->mouse_motion = GKFALSE;
     et->key_pressed = GKFALSE;
 
@@ -266,13 +266,11 @@ gbool event_handle_events(Event *et) {
         }
         // mouse button events
         if(SDL_MOUSEBUTTONDOWN == et->data->type || SDL_MOUSEBUTTONUP == et->data->type) {
-            // mouse wheel
-            if(SDL_BUTTON_WHEELDOWN == et->data->button.button || SDL_BUTTON_WHEELUP == et->data->button.button) {
-                _handle_mousewheel(et, &et->data->button);
-                break;
-            }  else {
-                _handle_mousebutton(et, &et->data->button);
-            }
+            _handle_mousebutton(et, &et->data->button);
+        }
+        // mouse wheel
+        if(SDL_MOUSEWHEEL == et->data->type) {
+            _handle_mousewheel(et, &et->data->button);
         }
         // exit
         if(SDL_QUIT == et->data->type){
@@ -284,37 +282,37 @@ gbool event_handle_events(Event *et) {
     return GKTRUE;
 }
 
-KeySym
-event_keyvalue(Event *event) {
+key_sym
+event_keyvalue(event *event) {
     return (_sdl_to_keysym(event->data->key.keysym.sym));
 }
 
-EventType
-event_type(Event *event) {
+event_type
+event_gettype(event *event) {
     return (_sdl_to_event_type(event->data->type));
 }
 
-gint16 event_mouse_x(Event *event) {
+gint16 event_mouse_x(event *event) {
     return (event->data->motion.x);
 }
 
 gint16
-event_mouse_y(Event *event) {
+event_mouse_y(event *event) {
     return (event->data->motion.y);
 }
 
 point2d
-event_mouse_position(Event *event) {
+event_mouse_position(event *event) {
     point2d pos = {event->data->motion.x, event->data->motion.y};
     return (pos);
 }
 
 gbool
-event_mouse_leftbutton_down(Event *event) {
+event_mouse_leftbutton_down(event *event) {
     return (event->data->button.button == SDL_BUTTON_LEFT);
 }
 
 gbool
-event_mouse_rightbutton_down(Event *event) {
+event_mouse_rightbutton_down(event *event) {
     return (event->data->button.button == SDL_BUTTON_RIGHT);
 }

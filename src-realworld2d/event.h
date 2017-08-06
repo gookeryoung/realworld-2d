@@ -6,7 +6,7 @@
 
 GK_BEGIN_HEADER
 
-typedef enum EventType_ {
+typedef enum event_type_ {
     ET_NOEVENT = 0,
     ET_ACTIVEEVENT,
     ET_KEYDOWN,
@@ -27,9 +27,9 @@ typedef enum EventType_ {
     ET_VIDEOEXPOSE,
     ET_USEREVENT = 24,
     ET_NUMEVENTS = 32
-} EventType;
+} event_type;
 
-typedef enum KeySym_ {
+typedef enum key_sym_ {
     KEY_NONE,
     KEY_BACKSPACE,
     KEY_RETURN,
@@ -120,16 +120,16 @@ typedef enum KeySym_ {
     KEY_x,
     KEY_y,
     KEY_z
-} KeySym;
+} key_sym;
 
-typedef struct Event_ {
+typedef struct event_ {
     union SDL_Event *data;
 
 
     gbool mouse_motion;
     gbool key_pressed;
 
-    KeySym key_value;
+    key_sym key_value;
 
     guint8 mouse_state;
     point2d mouse_cu;
@@ -142,20 +142,20 @@ typedef struct Event_ {
     point2d mouse_rr;
     point2d mouse_pr;
     point2d mouse_rl;
-} Event;
+} event;
 
-Event *event_get(void);
-void event_del(Event *event);
+event *event_get(void);
+void event_del(event *event);
 
-gbool event_handle_events(Event *et);
+gbool event_handle_events(event *et);
 
-KeySym event_keyvalue(Event *event);
-EventType event_type(Event *event);
-gint16 event_mouse_x(Event *event);
-gint16 event_mouse_y(Event *event);
-point2d event_mouse_position(Event *event);
-gbool event_mouse_leftbutton_down(Event *event);
-gbool event_mouse_rightbutton_down(Event *event);
+key_sym event_keyvalue(event *event);
+event_type event_gettype(event *event);
+gint16 event_mouse_x(event *event);
+gint16 event_mouse_y(event *event);
+point2d event_mouse_position(event *event);
+gbool event_mouse_leftbutton_down(event *event);
+gbool event_mouse_rightbutton_down(event *event);
 
 GK_END_HEADER
 

@@ -21,7 +21,8 @@ HEADERS += \
     timer.h \
     hashtable.h \
     event.h \
-    rect.h
+    rect.h \
+    graphics.h
 
 SOURCES += \
     timer.c \
