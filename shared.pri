@@ -1,6 +1,6 @@
-
+# global variable defines
 REALWORLD2D_BINARY_PATH = $$PWD/examples
-REALWORLD2D_LIB_PATH = $$PWD/lib
+REALWORLD2D_3RDSRC_PATH = $$PWD/3rdparty
 REALWORLD2D_SRC_PATH = $$PWD/src-realworld2d
 REALWORLD2D_PYLIB_PATH = $$PWD/src-realworld2d-pylib
 
