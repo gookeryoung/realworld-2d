@@ -2,42 +2,42 @@
 #include "timer.h"
 #include "graphicssystem.h"
 
-static GKGraphicsSystem *__gkgraphics_system_instance__ = NULL;
-static guint32 __gkgraphics_system_default_fps__ = 60;
+static graphics_system *_instance = NULL;
+static guint32 _default_fps = 60;
 
-GKGraphicsSystem *GKGraphicsSystem_Get(void)
-{
-    if (__gkgraphics_system_instance__ == NULL) {
-        GK_NEW(__gkgraphics_system_instance__, GKGraphicsSystem);
+graphics_system *
+graphicssytem_get(void) {
+    if (_instance == NULL) {
+        GK_NEW(_instance, graphics_system);
 
-        __gkgraphics_system_instance__->_timer = timer_new();
-        __gkgraphics_system_instance__->_fps = __gkgraphics_system_default_fps__;
+        _instance->timer = timer_new();
+        _instance->fps = _default_fps;
 
         if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
             GK_BAILOUT("%s\n", "Failed to initialize graphics system.\n");
         }
     }
 
-    return (__gkgraphics_system_instance__);
+    return (_instance);
 }
 
-void GKGraphicsSystem_Free()
-{
-    if (__gkgraphics_system_instance__ != NULL) {
-        timer_del(__gkgraphics_system_instance__->_timer);
-        GK_DELETE(__gkgraphics_system_instance__);
+void
+graphicssystem_del() {
+    if (_instance != NULL) {
+        timer_del(_instance->timer);
+        GK_DELETE(_instance);
 
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
     }
 }
 
-void GKGraphicsSystem_Delay(void)
-{
-    GKGraphicsSystem *s = GKGraphicsSystem_Get();
+void
+graphicssystem_delay(void) {
+    graphics_system *s = graphicssytem_get();
 
-    if (timer_getticks(s->_timer) < 1000.0f / s->_fps) {
-        SDL_Delay((guint32)(1000.0f / s->_fps - timer_getticks(s->_timer)));
+    if (timer_getticks(s->timer) < 1000.0f / s->fps) {
+        SDL_Delay((guint32)(1000.0f / s->fps - timer_getticks(s->timer)));
     }
-    timer_reset(s->_timer);
+    timer_reset(s->timer);
 }
 

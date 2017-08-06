@@ -6,48 +6,48 @@
 
 GK_BEGIN_HEADER
 
-#define GKMAPOBJECT_NAME_LENGTH 64
-#define GKMAP_NAME_LENGTH       36
+#define MAPOBJECT_NAME_LENGTH   64
+#define MAP_NAME_LENGTH         36
 
 enum {
-    GKMAPOBJECT_STATIC = 1,
-    GKMAPOBJECT_ANIMATED
+    MAPOBJECT_STATIC = 1,
+    MAPOBJECT_ANIMATED
 };
 
-typedef struct GKMapObject {
-    char _name[GKMAPOBJECT_NAME_LENGTH];
-    guint32 _id;
-    guint32 _type;       /* Define static or moving object. */
-    guint32 _depth;      /* Determines the blit order. */
+typedef struct gamemap_object_ {
+    char name[MAPOBJECT_NAME_LENGTH];
+    guint32 id;
+    guint32 type;       /* Define static or moving object. */
+    guint32 depth;      /* Determines the blit order. */
 
-    void *_data;
-} GKMapObject;
+    void *data;
+} gamemap_object;
 
-GKMapObject *GKMapObject_New(const char *config_str);
-void GKMapObject_Delete(GKMapObject *m);
-void GKMapObject_Blit(GKMapObject *m, struct GKSurface *s);
+gamemap_object *gamemapobject_new(const char *config_str);
+void gamemapobject_del(gamemap_object *m);
+void gamemapobject_blit(gamemap_object *m, struct surface_ *s);
 
-typedef struct GKMap {
-    guint16 _id;
-    char _name[GKMAP_NAME_LENGTH];
+typedef struct gamemap_ {
+    guint16 id;
+    char name[MAP_NAME_LENGTH];
 
-    struct GKMap *_prev;
-    struct GKMap *_next;
+    struct gamemap_ *prev;
+    struct gamemap_ *next;
 
-    point2d _enterPt;
-    point2d _exitPt;
+    point2d enter_point;
+    point2d exit_point;
 
-    struct GKMapObject **_objects;
-    guint32 _objectCount;
+    struct gamemap_object_ **objects;
+    guint32 object_count;
 
-    struct GKGround *_ground;
-} GKMap;
+    struct ground_ *ground;
+} gamemap;
 
-GKMap *GKMap_New(void);
-GKMap *GKMap_NewFromFile(const char *fn);
-void GKMap_Delete(GKMap *m);
-void GKMap_Blit(GKMap *m, struct GKSurface *s);
-void GKMap_Append(GKMap *m, GKMap *next);
+gamemap *gamemap_new(void);
+gamemap *gamemap_new_fromfile(const char *fn);
+void gamemap_del(gamemap *m);
+void gamemap_blit(gamemap *m, struct surface_ *s);
+void gamemap_append(gamemap *m, gamemap *next);
 
 GK_END_HEADER
 

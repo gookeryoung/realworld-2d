@@ -2,82 +2,82 @@
 #include "graphics.h"
 #include "screen.h"
 
-static GKScreen *__GKScreen_Instance__ = NULL;
+static screen *_instance = NULL;
 
-struct GKScreen *__GKScreen_New(void)
-{
-    GKScreen *ret = NULL;
-    GK_NEW(ret, GKScreen);
+screen *
+_screen_new(void) {
+    screen *ret = NULL;
+    GK_NEW(ret, screen);
 
-    ret->_surface = GKSurface_New();
+    ret->data = surface_new();
     return (ret);
 }
 
-GKScreen *GKScreen_Get(void)
-{
-    if (__GKScreen_Instance__ == NULL) {
-        __GKScreen_Instance__ = __GKScreen_New();
+screen *
+screen_get(void) {
+    if (_instance == NULL) {
+        _instance = _screen_new();
     }
 
-    return (__GKScreen_Instance__);
+    return (_instance);
 }
 
-GKSurface *GKScreen_GetSurface(void)
+void screen_del(void)
 {
-    return (GKScreen_Get()->_surface);
-}
-
-void GKScreen_Free(void)
-{
-    if (__GKScreen_Instance__) {
-        GKSurface_Delete(__GKScreen_Instance__->_surface);
-        GK_DELETE(__GKScreen_Instance__);
+    if (_instance) {
+        surface_del(_instance->data);
+        GK_DELETE(_instance);
     }
 }
 
-void GKScreen_SetVideoMode(gint32 w, gint32 h, gbool full_screen)
+surface *
+screen_getsurface(void) {
+    return (screen_get()->data);
+}
+
+void screen_setvideomode(gint32 w, gint32 h, gbool full_screen)
 {
     guint32 flags = SDL_HWPALETTE | SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL;
-    GKScreen *screen = GKScreen_Get();
+    screen *screen = screen_get();
 
-    if (full_screen || (screen->_surface->_data && (screen->_surface->_data->flags & SDL_FULLSCREEN)))
+    if (full_screen || (screen->data->data && (screen->data->data->flags & SDL_FULLSCREEN)))
         flags |= SDL_FULLSCREEN;
 
-    screen->_surface->_data = SDL_SetVideoMode(w, h, 0, flags);
-    if (screen->_surface->_data == NULL) {
-        screen->_surface->_data = SDL_SetVideoMode(640, 480, 0, flags);
+    screen->data->data = SDL_SetVideoMode(w, h, 0, flags);
+    if (screen->data->data == NULL) {
+        screen->data->data = SDL_SetVideoMode(640, 480, 0, flags);
         GK_WARNING("%s\n", SDL_GetError());
     }
 }
 
-int GKScreen_Flip(void)
-{
-    return (SDL_Flip(GKScreen_Get()->_surface->_data));
+int
+screen_flip(void) {
+    return (SDL_Flip(screen_get()->data->data));
 }
 
-void GKScreen_ToggleFullScreen(void)
-{
-    GKScreen *screen = GKScreen_Get();
-    SDL_WM_ToggleFullScreen(screen->_surface->_data);
+void
+screen_togglefullscreen(void) {
+    screen *screen = screen_get();
+    SDL_WM_ToggleFullScreen(screen->data->data);
 }
 
-void GKScreen_SetCaption(const char *caption)
-{
+void
+screen_setcaption(const char *caption) {
     SDL_WM_SetCaption(caption, NULL);
 }
 
-void GKScreen_SetIcon(GKSurface *surface)
-{
-    SDL_WM_SetIcon(surface->_data, NULL);
+void
+screen_seticon(surface *surface) {
+    SDL_WM_SetIcon(surface->data, NULL);
 }
 
-void GKScreen_ShowCursor(void)
-{
+void
+screen_showcursor(void) {
     SDL_ShowCursor(SDL_ENABLE);
 }
 
-void GKScreen_HideCursor(void)
-{
+void
+screen_hidecursor(void) {
     SDL_ShowCursor(SDL_DISABLE);
 }
 

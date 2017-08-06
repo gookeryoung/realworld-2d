@@ -6,72 +6,72 @@
 
 GK_BEGIN_HEADER
 
-typedef struct GKPixel {
+typedef struct pixel_ {
     guint8 r;
     guint8 g;
     guint8 b;
     guint8 a;
-} GKPixel;
+} pixel;
 
-GKPixel *GKPixel_New(guint8 r, guint8 g, guint8 b, guint8 a);
-void GKPixel_Delete(GKPixel *p);
+pixel *pixel_new(guint8 r, guint8 g, guint8 b, guint8 a);
+void pixel_del(pixel *p);
 
-typedef struct GKSurface {
-    gbool _useAlpha;             /* Use alpha will be slower.*/
+typedef struct surface_ {
+    gbool use_alpha;             /* Use alpha will be slower.*/
 
-    gint16 _cx;
-    gint16 _cy;
+    gint16 cx;
+    gint16 cy;
 
-    struct SDL_Surface *_data;
-} GKSurface;
+    struct SDL_Surface *data;
+} surface;
 
 /* Methods for creating, copying or destorying a GKSurface object. */
-GKSurface *GKSurface_New(void);
-GKSurface *GKSurface_NewFromFile(const char *file_name, gbool use_alpha);
-GKSurface *GKSurface_NewEmptySurface(guint16 w, guint16 h, guint8 depth, guint32 flag);
-GKSurface *GKSurface_Duplicate(GKSurface *src);
-void GKSurface_Delete(GKSurface *s);
+surface *surface_new(void);
+surface *surface_new_fromfile(const char *file_name, gbool use_alpha);
+surface *surface_new_empty(guint16 w, guint16 h, guint8 depth, guint32 flag);
+surface *surface_copy(surface *src);
+void surface_del(surface *s);
 
 /* Methods for drawing a GKSurface on to another. */
-void GKSurface_Blit(GKSurface *src, GKSurface *dst);
-void GKSurface_BlitXY(GKSurface *src, GKSurface *dst, gint16 ox, gint16 oy);
-void GKSurface_BlitRect(GKSurface *src, GKSurface *dst, gint16 x, gint16 y, guint16 w, guint16 h);
+void surface_blit(surface *src, surface *dst);
+void surface_blitxy(surface *src, surface *dst, gint16 ox, gint16 oy);
+void surface_blitrect(surface *src, surface *dst, gint16 x, gint16 y, guint16 w, guint16 h);
 
 /* Methods for collide checking. */
-gbool GKSurface_CheckPixel(GKSurface *s, gint16 x, gint16 y);
-gbool GKSurface_BoxCollide(GKSurface *s1, GKSurface *s2);
-gbool GKSurface_Collide(GKSurface *s1, GKSurface *s2);
+gbool surface_checkpixel(surface *s, gint16 x, gint16 y);
+gbool surface_collidebox(surface *s1, surface *s2);
+gbool surface_collide(surface *s1, surface *s2);
 
-void GKSurface_UseAlpha(GKSurface *s);
-void GKSurface_IgnoreAlpha(GKSurface *s);
+void surface_usealpha(surface *s);
+void surface_ignorealpha(surface *s);
 
-guint32 GKSurface_MapRGBA(GKSurface *s, guint8 r, guint8 g, guint8 b, guint8 a);
-int GKSurface_GetDefaultDepth(void);
-void GKSurface_SetDefaultDepth(guint8 depth);
+guint32 surface_map_rgba(surface *s, guint8 r, guint8 g, guint8 b, guint8 a);
+guint8 surface_getdefaultdepth(void);
+void surface_setdefaultdepth(guint8 depth);
 
 /* Low level graphics functions. */
-void GKSurface_DrawPixel(GKSurface *s, gint16 x, gint16 y, guint32 color);
-void GKSurface_FillRect(GKSurface *s, rect *r, guint32 color);
+void surface_drawpixel(surface *s, gint16 x, gint16 y, guint32 color);
+void surface_fillrect(surface *s, rect *r, guint32 color);
 
-void GKSurface_SetPosition(GKSurface *s, gint16 x, gint16 y);
-void GKSurface_Set(GKSurface *s, guint16 w, guint16 h, guint8 depth, guint32 flag);
-void GKSurface_SetAlpha(GKSurface *s, guint8 alpha);
-void GKSurface_SetColorkey(GKSurface *s, guint8 r, guint8 g, guint8 b);
-void GKSurface_SetClipRect(GKSurface *s, gint16 x, gint16 y, guint16 w, guint16 h);
+void surface_setposition(surface *s, gint16 x, gint16 y);
+void surface_set(surface *s, guint16 w, guint16 h, guint8 depth, guint32 flag);
+void surface_setalpha(surface *s, guint8 alpha);
+void surface_setcolorkey(surface *s, guint8 r, guint8 g, guint8 b);
+void surface_setcliprect(surface *s, gint16 x, gint16 y, guint16 w, guint16 h);
 
-void GKSurface_Fill(GKSurface *s, guint32 color);
-void GKSurface_LoadPalette(GKSurface *s);
+void surface_fill(surface *s, guint32 color);
+void surface_loadpalette(surface *s);
 
 /* Methods for accessing to GKSurface data. */
-GKPixel *GKSurface_GetPixel(GKSurface *s, gint16 x, gint16 y);
-gint32 GKSurface_GetWidth(GKSurface *s);
-gint32 GKSurface_GetHeight(GKSurface *s);
-rect GKSurface_GetBounds(GKSurface *s);
-guint32 GKSurface_GetColorkey(GKSurface *s);
+pixel *surface_getpixel(surface *s, gint16 x, gint16 y);
+gint32 surface_getwidth(surface *s);
+gint32 surface_getheight(surface *s);
+rect surface_getbounds(surface *s);
+guint32 surface_getcolorkey(surface *s);
 
-#define GKSurface_W(s) ((s)->_data->w)
-#define GKSurface_H(s) ((s)->_data->h)
-#define GKSurface_XY2Index(s, x, y) (((s)->_data->w) * y + x)
+#define surface_w(s) ((s)->data->w)
+#define surface_h(s) ((s)->data->h)
+#define surface_xy2index(s, x, y) (((s)->data->w) * y + x)
 
 GK_END_HEADER
 

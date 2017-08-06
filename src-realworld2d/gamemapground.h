@@ -5,30 +5,30 @@
 
 GK_BEGIN_HEADER
 
-typedef struct GKGroundBlock {
-    gint16 _worldX;
-    gint16 _worldY;
-    struct GKSurface *_surface;
-} GKGroundBlock;
+typedef struct ground_block_ {
+    gint16 world_x;
+    gint16 world_y;
+    struct surface_ *data;
+} ground_block;
 
-GKGroundBlock *GKGroundBlock_NewFromFile(const char *fn);
-void GKGroundBlock_Delete(GKGroundBlock *gb);
+ground_block *groundblock_new_fromfile(const char *fn);
+void groundblock_del(ground_block *gb);
 
-typedef struct GKGround {
-    guint16 _w;
-    guint16 _h;
-    int _columns;
-    int _rows;
+typedef struct ground_ {
+    guint16 w;
+    guint16 h;
+    int columns;
+    int rows;
 
-    guint16 _gridWidth;
-    guint16 _gridHeight;
+    guint16 grid_width;
+    guint16 grid_height;
 
-    struct GKGroundBlock **_blocks;
-} GKGround;
+    struct ground_block_ **data;
+} ground;
 
-GKGround *GKGround_NewFromFile(const char *fn);
-void GKGround_Delete(GKGround *g);
-void GKGround_Blit(GKGround *g, struct GKSurface *s);
+ground *ground_new_fromfile(const char *fn);
+void ground_del(ground *g);
+void ground_blit(ground *g, struct surface_ *s);
 
 GK_END_HEADER
 

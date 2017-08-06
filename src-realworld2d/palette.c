@@ -3,9 +3,9 @@
 #include "surface.h"
 #include "palette.h"
 
-static GKPalette *__GKPalette_Instance__ = NULL;
+static palette *_instance = NULL;
 
-static const unsigned char __GKPalatte_Keys__[GKPALETTE_SIZE] = {
+static const unsigned char _keys[PALETTE_SIZE] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0x3f,
     0x3f, 0x3c, 0x3c, 0x3c, 0x3a, 0x3a, 0x3a, 0x37, 0x37, 0x37, 0x35, 0x35, 0x35, 0x32, 0x32, 0x32,
@@ -56,67 +56,67 @@ static const unsigned char __GKPalatte_Keys__[GKPALETTE_SIZE] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-GKPalette *__GKPalette_New__(void)
-{
+palette *
+_palette_new(void) {
     guint16 i = 0;
     const guint16 size = 255;
-    GKPalette *ret = NULL;
-    GKSurface *sur = NULL;
-    const unsigned char *p = __GKPalatte_Keys__;
+    palette *ret = NULL;
+    surface *sur = NULL;
+    const unsigned char *p = _keys;
 
-    GK_NEW(ret, GKPalette);
+    GK_NEW(ret, palette);
 
-    GK_NEW(ret->_palette, SDL_Palette);
-    GK_MALLOC(ret->_palette->colors, SDL_Color, size);
-    ret->_palette->ncolors = size;
+    GK_NEW(ret->data, SDL_Palette);
+    GK_MALLOC(ret->data->colors, SDL_Color, size);
+    ret->data->ncolors = size;
 
-    sur = GKSurface_NewEmptySurface(1, 1, GKSurface_GetDefaultDepth(), SDL_SWSURFACE | SDL_SRCALPHA);
+    sur = surface_new_empty(1, 1, surface_getdefaultdepth(), SDL_SWSURFACE | SDL_SRCALPHA);
 
     for (; i < size; ++i) {
-        ret->_palette->colors[i].r = *p++;
-        ret->_palette->colors[i].g = *p++;
-        ret->_palette->colors[i].b = *p++;
+        ret->data->colors[i].r = *p++;
+        ret->data->colors[i].g = *p++;
+        ret->data->colors[i].b = *p++;
 
-        ret->_palette->colors[i].r <<= 2;
-        ret->_palette->colors[i].g <<= 2;
-        ret->_palette->colors[i].b <<= 2;
+        ret->data->colors[i].r <<= 2;
+        ret->data->colors[i].g <<= 2;
+        ret->data->colors[i].b <<= 2;
 
-        ret->_pal[i] = SDL_MapRGBA(sur->_data->format,
-                                   ret->_palette->colors[i].r,
-                                   ret->_palette->colors[i].g,
-                                   ret->_palette->colors[i].b,
+        ret->pal[i] = SDL_MapRGBA(sur->data->format,
+                                   ret->data->colors[i].r,
+                                   ret->data->colors[i].g,
+                                   ret->data->colors[i].b,
                                    0xFF);
     }
 
     return (ret);
 }
 
-GKPalette *GKPalette_GetInstance(void)
-{
-    if (__GKPalette_Instance__ == NULL) {
-        __GKPalette_Instance__ = __GKPalette_New__();
+palette *
+palette_get(void) {
+    if (_instance == NULL) {
+        _instance = _palette_new();
     }
 
-    return (__GKPalette_Instance__);
+    return (_instance);
 }
 
-void GKPalette_DeleteInstance(void)
-{
-    if (__GKPalette_Instance__) {
-        GK_DELETE(__GKPalette_Instance__->_palette->colors);
-        GK_DELETE(__GKPalette_Instance__->_palette);
-        GK_DELETE(__GKPalette_Instance__);
+void
+palette_del(void) {
+    if (_instance) {
+        GK_DELETE(_instance->data->colors);
+        GK_DELETE(_instance->data);
+        GK_DELETE(_instance);
     }
 
 }
 
-guint32 GKPalette_GetColor(guint16 index)
-{
-    GKPalette *p = GKPalette_GetInstance();
-    if (index >= GKPALETTE_SIZE) {
+guint32
+palette_getcolor(guint16 index) {
+    palette *p = palette_get();
+    if (index >= PALETTE_SIZE) {
         GK_WARNING("%s\n", "Index out of range");
         return (0);
     }
 
-    return (p->_pal[index]);
+    return (p->pal[index]);
 }

@@ -3,140 +3,140 @@
 #include "surface.h"
 #include "font.h"
 
-static gbool __Open(GKFont *fnt, const char *file_name, gint32 size);
+static gbool _open(font *fnt, const char *file_name, gint32 size);
 
-static void __RenderChar(GKFont *fnt, GKSurface *dst, char c, color_type color, guint8 type);
-static void __RenderText(GKFont *fnt, GKSurface *dst, const char *str, color_type color, guint8 type);
-static void __RenderUnicodeChar(GKFont *fnt, GKSurface *dst, guint16 c, color_type color, guint8 type);
-static void __RenderUnicodeText(GKFont *fnt, GKSurface *dst, const guint16 *str, color_type color, guint8 type);
+static void _render_char(font *fnt, surface *dst, char c, color_type color, guint8 type);
+static void _render_text(font *fnt, surface *dst, const char *str, color_type color, guint8 type);
+static void _render_unicodechar(font *fnt, surface *dst, guint16 c, color_type color, guint8 type);
+static void _render_unicodetext(font *fnt, surface *dst, const guint16 *str, color_type color, guint8 type);
 
-GK_STATIC_INLINE gbool __IsValid(GKFont *fnt) { return fnt->_font != NULL; }
+GK_STATIC_INLINE gbool _isvalid(font *fnt) { return fnt->data != NULL; }
 
-GK_STATIC_INLINE void __SetStyle(GKFont *fnt, guint8 style)
-{ if (fnt->_font) TTF_SetFontStyle(fnt->_font, style); }
+GK_STATIC_INLINE void _setstyle(font *fnt, guint8 style)
+{ if (fnt->data) TTF_SetFontStyle(fnt->data, style); }
 
-GK_STATIC_INLINE gint32 __Height(GKFont *fnt)
-{ return (fnt->_font ? TTF_FontHeight(fnt->_font) : 0); }
+GK_STATIC_INLINE gint32 _height(font *fnt)
+{ return (fnt->data ? TTF_FontHeight(fnt->data) : 0); }
 
-GK_STATIC_INLINE gint32 __Ascent(GKFont *fnt)
-{ return (fnt->_font ? TTF_FontAscent(fnt->_font) : 0); }
+GK_STATIC_INLINE gint32 _ascent(font *fnt)
+{ return (fnt->data ? TTF_FontAscent(fnt->data) : 0); }
 
-GK_STATIC_INLINE gint32 __Descent(GKFont *fnt)
-{ return (fnt->_font ? TTF_FontDescent(fnt->_font) : 0); }
+GK_STATIC_INLINE gint32 _descent(font *fnt)
+{ return (fnt->data ? TTF_FontDescent(fnt->data) : 0); }
 
-GK_STATIC_INLINE gint32 __LineSkip(GKFont *fnt)
-{ return (fnt->_font ? TTF_FontLineSkip(fnt->_font) : 0); }
+GK_STATIC_INLINE gint32 _lineskip(font *fnt)
+{ return (fnt->data ? TTF_FontLineSkip(fnt->data) : 0); }
 
-static gbool __initialized = GKFALSE;
+static gbool _is_initialized = GKFALSE;
 
-static GKFontInterface __vtbl = {
-    __Open,
-    __RenderChar,
-    __RenderText,
-    __RenderUnicodeChar,
-    __RenderUnicodeText,
+static font_interface _vtbl = {
+    _open,
+    _render_char,
+    _render_text,
+    _render_unicodechar,
+    _render_unicodetext,
 
-    __IsValid,
-    __SetStyle,
+    _isvalid,
+    _setstyle,
 
-    __Height,
-    __Ascent,
-    __Descent,
-    __LineSkip
+    _height,
+    _ascent,
+    _descent,
+    _lineskip
 };
 
-GKFont *GKFont_New(void)
-{
-    GKFont *ret = NULL;
-    GK_NEW(ret, GKFont);
+font *
+font_new(void) {
+    font *ret = NULL;
+    GK_NEW(ret, font);
 
-    ret->vtbl = &__vtbl;
-    ret->_font = NULL;
+    ret->vtbl = &_vtbl;
+    ret->data = NULL;
 
     return ret;
 }
 
-void GKFont_Delete(GKFont *fnt) { if (fnt) { TTF_CloseFont(fnt->_font); } }
+void font_del(font *fnt) { if (fnt) { TTF_CloseFont(fnt->data); } }
 
-void GKFontSystem_Init(void)
-{
+void
+fontsystem_init(void) {
     GK_REQUIRE(TTF_Init() != -1, "Font initialize failed.");
-    __initialized = GKTRUE;
+    _is_initialized = GKTRUE;
 }
 
-void GKFontSystem_Quit(void)
-{
+void
+fontsystem_quit(void) {
     TTF_Quit();
-    __initialized = GKFALSE;
+    _is_initialized = GKFALSE;
 }
 
-static gbool __Open(GKFont *fnt, const char *file_name, gint32 size)
-{
-    if (__initialized) {
-        if (fnt->_font) {
-            TTF_CloseFont(fnt->_font);
+static gbool
+_open(font *fnt, const char *file_name, gint32 size) {
+    if (_is_initialized) {
+        if (fnt->data) {
+            TTF_CloseFont(fnt->data);
         }
-        fnt->_font = TTF_OpenFont(file_name, size);
+        fnt->data = TTF_OpenFont(file_name, size);
 
-        GK_CHECK(fnt->_font, "Open file %s failed.", file_name);
+        GK_CHECK(fnt->data, "Open file %s failed.", file_name);
     } else {
         GK_BAILOUT("Font system not initialized.");
     }
 
-    return (fnt->_font != NULL);
+    return (fnt->data != NULL);
 }
 
-static void __RenderChar(GKFont *fnt, GKSurface *dst, char c, color_type color, guint8 type)
-{
+static void
+_render_char(font *fnt, surface *dst, char c, color_type color, guint8 type) {
     char buffer[2] = { '\0', '\0' };
     buffer[0] = c;
 
-    __RenderText(fnt, dst, buffer, color, type);
+    _render_text(fnt, dst, buffer, color, type);
 }
 
-static void __RenderText(GKFont *fnt, GKSurface *dst, const char *str, color_type color, guint8 type)
-{
-    GK_REQUIRE(type == GKFONT_SOLID || GKFONT_BLENDED, "Font render type error.");
+static void
+_render_text(font *fnt, surface *dst, const char *str, color_type color, guint8 type) {
+    GK_REQUIRE(type == FONT_SOLID || FONT_BLENDED, "Font render type error.");
 
-    if (dst->_data) {
-        SDL_FreeSurface(dst->_data);
+    if (dst->data) {
+        SDL_FreeSurface(dst->data);
     }
 
-    if (fnt->_font) {
+    if (fnt->data) {
         switch (type) {
-        case GKFONT_BLENDED:
-            dst->_data = TTF_RenderUTF8_Blended(fnt->_font, str, color);
+        case FONT_BLENDED:
+            dst->data = TTF_RenderUTF8_Blended(fnt->data, str, color);
             break;
         default:
-            dst->_data = TTF_RenderUTF8_Solid(fnt->_font, str, color);
+            dst->data = TTF_RenderUTF8_Solid(fnt->data, str, color);
             break;
         }
     }
 }
 
-static void __RenderUnicodeChar(GKFont *fnt, GKSurface *dst, guint16 c, color_type color, guint8 type)
-{
+static void
+_render_unicodechar(font *fnt, surface *dst, guint16 c, color_type color, guint8 type) {
     guint16 buffer[2] = { L'\0', L'\0' };
     buffer[0] = c;
 
-    __RenderUnicodeText(fnt, dst, buffer, color, type);
+    _render_unicodetext(fnt, dst, buffer, color, type);
 }
 
-static void __RenderUnicodeText(GKFont *fnt, GKSurface *dst, const guint16 *str, color_type color, guint8 type)
-{
-    GK_REQUIRE(type == GKFONT_SOLID || GKFONT_BLENDED, "Font render type error.");
+static void
+_render_unicodetext(font *fnt, surface *dst, const guint16 *str, color_type color, guint8 type) {
+    GK_REQUIRE(type == FONT_SOLID || FONT_BLENDED, "Font render type error.");
 
-    if (dst->_data) {
-        SDL_FreeSurface(dst->_data);
+    if (dst->data) {
+        SDL_FreeSurface(dst->data);
     }
 
-    if (fnt->_font) {
+    if (fnt->data) {
         switch (type) {
-        case GKFONT_BLENDED:
-            dst->_data = TTF_RenderUNICODE_Blended(fnt->_font, str, color);
+        case FONT_BLENDED:
+            dst->data = TTF_RenderUNICODE_Blended(fnt->data, str, color);
             break;
         default:
-            dst->_data = TTF_RenderUNICODE_Solid(fnt->_font, str, color);
+            dst->data = TTF_RenderUNICODE_Solid(fnt->data, str, color);
             break;
         }
     }

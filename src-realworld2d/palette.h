@@ -5,17 +5,17 @@
 
 GK_BEGIN_HEADER
 
-#define GKPALETTE_SIZE 768
+#define PALETTE_SIZE 768
 
-typedef struct GKPalette {
+typedef struct palette_ {
 
-    guint32 _pal[GKPALETTE_SIZE];
-    struct SDL_Palette *_palette;
-} GKPalette;
+    guint32 pal[PALETTE_SIZE];
+    struct SDL_Palette *data;
+} palette;
 
-GKPalette *GKPalette_GetInstance(void);
-void GKPalette_DeleteInstance(void);
-guint32 GKPalette_GetColor(guint16 index);
+palette *palette_get(void);
+void palette_del(void);
+guint32 palette_getcolor(guint16 index);
 
 
 GK_END_HEADER

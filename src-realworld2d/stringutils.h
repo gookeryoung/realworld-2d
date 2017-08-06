@@ -5,34 +5,32 @@
 
 GK_BEGIN_HEADER
 
-typedef struct GKStringInterface_ GKStringInterface;
+typedef struct string_interface_ string_interface;
 
 #define GK_STR_NOTFOUND -1
 
-typedef struct GKString_ {
-    guint32 _length;
-    guint32 _capacity;
+typedef struct string_ {
+    guint32 length;
+    guint32 capacity;
 
-    char *_data;
-    GKStringInterface *vtbl;
-} GKString;
+    char *data;
+    string_interface *vtbl;
+} string;
 
-typedef struct GKStringInterface_ {
-    GKString *(*Copy)(GKString *);
-} GKStringInterface;
+typedef struct string_interface_ {
+    string *(*Copy)(string *);
+} string_interface;
 
-GKString *GKString_New(const char *str);
+string *string_new(const char *str);
+char *string_trim(char *str);
+char *string_tolower(char *str);
+char *string_toupper(char *str);
+int string_assign(char src_str[], const char *str);
+gint16 string_rfindfirst(const char *str, char c);
+char *string_copy(const char *str);
 
-int GKChar_IsWhiteSpace(char c);
-char *GKString_Trim(char *str);
-char *GKString_ToLower(char *str);
-char *GKString_ToUpper(char *str);
-int GKString_Assign(char src_str[], const char *str);
-gint16 GKString_RFindFirst(const char *str, char c);
-char *GKString_Copy(const char *str);
-
-char *GKConfigNameFromString(char *str);
-char *GKConfigValueFromString(char *str);
+char *configname_fromstring(char *str);
+char *configvalue_fromstring(char *str);
 
 GK_END_HEADER
 

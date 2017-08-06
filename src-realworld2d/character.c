@@ -4,20 +4,20 @@
 #include "charactermotion.h"
 #include "character.h"
 
-GKCharacter *GKCharacter_NewFromFile(const char *fn)
-{
+character *
+character_new_fromfile(const char *file_name) {
     guint32 i = 0;
     guint32 states = 0;
     char sprite_config[GK_MAX_FILENAME_LEN];
     FILE *f = NULL;
 
-    GKCharacter *ret = NULL;
-    GK_NEW(ret, GKCharacter);
+    character *ret = NULL;
+    GK_NEW(ret, character);
 
-    ret->_curDirection = 0;
-    ret->_motion = GKMotion_New(0, 0, GKMOTIONSTATE_RUN);
+    ret->cur_direction = 0;
+    ret->motion = motion_new(0, 0, GKMOTIONSTATE_RUN);
 
-    f = fopen(fn, "r");
+    f = fopen(file_name, "r");
     if (f == NULL) {
         GK_BAILOUT("%s\n", "Fail to read character file.");
     }
@@ -25,8 +25,8 @@ GKCharacter *GKCharacter_NewFromFile(const char *fn)
     fscanf(f, "%d\n", &states);
 
     if (states) {
-        ret->_directions = states;
-        GK_MALLOC(ret->_sprites, GKSprite*, states);
+        ret->directions = states;
+        GK_MALLOC(ret->sprites, sprite*, states);
     } else {
         GK_BAILOUT("%s\n", "Invalid state size.");
     }
@@ -34,47 +34,46 @@ GKCharacter *GKCharacter_NewFromFile(const char *fn)
     for (; i < states; ++i) {
         memset(sprite_config, 0, GK_MAX_FILENAME_LEN);
         fscanf(f, "%s\n", sprite_config);
-        ret->_sprites[i] = GKSprite_NewFromConfig(sprite_config);
+        ret->sprites[i] = sprite_new_fromfile(sprite_config);
     }
 
     return (ret);
 }
 
-void GKCharacter_Delete(GKCharacter *c)
-{
+void
+character_del(character *c) {
     guint32 i = 0;
-    for (; i < c->_directions; ++i) {
-        GKSprite_Delete(c->_sprites[i]);
+    for (; i < c->directions; ++i) {
+        sprite_del(c->sprites[i]);
     }
-
     GK_DELETE(c);
 }
 
-void GKCharacter_Blit(GKCharacter *c, struct GKSurface *s)
-{
-    assert(c->_curDirection < c->_directions);
-    GKMotion_Move(c->_motion);
-    GKSprite_SetPosition(c->_sprites[c->_curDirection], c->_motion->_worldX, c->_motion->_worldY);
-    GKSprite_Blit(c->_sprites[c->_curDirection], s);
+void
+character_blit(character *c, struct surface_ *s) {
+    assert(c->cur_direction < c->directions);
+    motion_move(c->motion);
+    sprite_setposition(c->sprites[c->cur_direction], c->motion->world_x, c->motion->world_y);
+    sprite_blit(c->sprites[c->cur_direction], s);
 }
 
-void GKCharacter_ChangeState(GKCharacter *c, guint8 state)
-{
-    if (state >= c->_directions) {
+void
+character_changestate(character *c, guint8 state) {
+    if (state >= c->directions) {
         GK_WARNING("%s\n", "State out of range.");
-        c->_curDirection = GKCHARACTER_DIRECTION_EAST;
+        c->cur_direction = GKCHARACTER_DIRECTION_EAST;
     } else {
-        c->_curDirection = state;
+        c->cur_direction = state;
     }
 }
 
-void GKCharacter_MoveTo(GKCharacter *c, gint16 x, gint16 y)
-{
-    GKMotion_SetTarget(c->_motion, x, y);
+void
+character_moveto(character *c, gint16 x, gint16 y) {
+    GKMotion_SetTarget(c->motion, x, y);
 }
 
-void GKCharacter_SetPosition(GKCharacter *c, gint16 x, gint16 y)
-{
-    c->_motion->_worldX = x;
-    c->_motion->_worldY = y;
+void
+character_setposition(character *c, gint16 x, gint16 y) {
+    c->motion->world_x = x;
+    c->motion->world_y = y;
 }

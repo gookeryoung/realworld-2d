@@ -5,9 +5,9 @@
 
 GK_BEGIN_HEADER
 
-#define GKMOTION_DEFAULT_RATE 3.0f
+#define MOTION_DEFAULT_RATE 3.0f
 
-typedef enum GKMotionState {
+typedef enum motion_state_ {
     GKMOTIONSTATE_STAND,
     GKMOTIONSTATE_RUN,
     GKMOTIONSTATE_FIGHTREADY,
@@ -15,27 +15,27 @@ typedef enum GKMotionState {
     GKMOTIONSTATE_DEFEND,
     GKMOTIONSTATE_INJURY,
     GKMOTIONSTATE_DEAD
-} GKMotionState;
+} motion_state;
 
-typedef struct GKMotion {
-    gint16 _worldX;
-    gint16 _worldY;
-    gint16 _targetX;
-    gint16 _targetY;
-    gfloat _vx;
-    gfloat _vy;
-    gfloat _rate;
-    guint8 _state;
-} GKMotion;
+typedef struct motion_ {
+    gint16 world_x;
+    gint16 world_y;
+    gint16 target_x;
+    gint16 target_y;
+    gfloat vx;
+    gfloat vy;
+    gfloat rate;
+    guint8 state;
+} motion;
 
-GKMotion *GKMotion_New(gint16 x, gint16 y, guint8 state);
-void GKMotion_Move(GKMotion *m);
+motion *motion_new(gint16 x, gint16 y, guint8 state);
+void motion_move(motion *m);
 
-static __inline void GKMotion_SetV(GKMotion *m, gint16 vx, gint16 vy)
-{ m->_vx = vx; m->_vy = vy; }
+GK_STATIC_INLINE void motion_setvelocity(motion *m, gint16 vx, gint16 vy)
+{ m->vx = vx; m->vy = vy; }
 
-static __inline void GKMotion_SetTarget(GKMotion *m, gint16 x, gint16 y)
-{ m->_targetX = x; m->_targetY = y; }
+GK_STATIC_INLINE void GKMotion_SetTarget(motion *m, gint16 x, gint16 y)
+{ m->target_x = x; m->target_y = y; }
 
 GK_END_HEADER
 

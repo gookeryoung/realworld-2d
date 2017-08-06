@@ -5,33 +5,33 @@
 #include "gamemapground.h"
 #include "gamemap.h"
 
-GKMapObject *GKMapObject_New(const char *config_str)
-{
+gamemap_object *
+gamemapobject_new(const char *config_str) {
     gint32 x, y;
     char data_file_path[GK_MAX_FILENAME_LEN];
 
-    GKMapObject *ret = NULL;
-    GK_NEW(ret, GKMapObject);
+    gamemap_object *ret = NULL;
+    GK_NEW(ret, gamemap_object);
 
-    memset(ret->_name, 0, GKMAPOBJECT_NAME_LENGTH);
+    memset(ret->name, 0, MAPOBJECT_NAME_LENGTH);
     memset(data_file_path, 0, GK_MAX_FILENAME_LEN);
 
     sscanf(config_str,
            "%d,%d,%d,%d,%d %s\n",
-           &ret->_type,
-           &ret->_id,
-           &ret->_depth,
+           &ret->type,
+           &ret->id,
+           &ret->depth,
            &x,
            &y,
            data_file_path);
 
-    if (ret->_type == GKMAPOBJECT_STATIC) {
-        ret->_data = GKSurface_NewFromFile(data_file_path, GKFALSE);
-        GKSurface_SetColorkey(ret->_data, 255, 255, 255);
-        GKSurface_SetPosition(ret->_data, x, y);
-    } else if (ret->_type == GKMAPOBJECT_ANIMATED) {
-        ret->_data = GKSprite_NewFromConfig(data_file_path);
-        GKSprite_SetPosition(ret->_data, x, y);
+    if (ret->type == MAPOBJECT_STATIC) {
+        ret->data = surface_new_fromfile(data_file_path, GKFALSE);
+        surface_setcolorkey(ret->data, 255, 255, 255);
+        surface_setposition(ret->data, x, y);
+    } else if (ret->type == MAPOBJECT_ANIMATED) {
+        ret->data = sprite_new_fromfile(data_file_path);
+        sprite_setposition(ret->data, x, y);
     } else {
         GK_BAILOUT("%s\n","The type of map object doesn't exist.");
     }
@@ -39,12 +39,12 @@ GKMapObject *GKMapObject_New(const char *config_str)
     return (ret);
 }
 
-void GKMapObject_Delete(GKMapObject *m)
-{
-    if (m->_type == GKMAPOBJECT_STATIC) {
-        GKSurface_Delete(m->_data);
-    } else if (m->_type == GKMAPOBJECT_ANIMATED) {
-        GKSprite_Delete(m->_data);
+void
+gamemapobject_del(gamemap_object *m) {
+    if (m->type == MAPOBJECT_STATIC) {
+        surface_del(m->data);
+    } else if (m->type == MAPOBJECT_ANIMATED) {
+        sprite_del(m->data);
     } else {
         GK_BAILOUT("%s\n","The type of map object doesn't exist.");
     }
@@ -52,47 +52,47 @@ void GKMapObject_Delete(GKMapObject *m)
     GK_DELETE(m);
 }
 
-void GKMapObject_Blit(GKMapObject *m, struct GKSurface *s)
-{
-    if (m->_type == GKMAPOBJECT_STATIC) {
-        GKSurface_Blit(m->_data, s);
-    } else if (m->_type == GKMAPOBJECT_ANIMATED) {
-        GKSprite_Blit(m->_data, s);
+void
+gamemapobject_blit(gamemap_object *m, struct surface_ *s) {
+    if (m->type == MAPOBJECT_STATIC) {
+        surface_blit(m->data, s);
+    } else if (m->type == MAPOBJECT_ANIMATED) {
+        sprite_blit(m->data, s);
     } else {
         GK_BAILOUT("%s\n","The type of map object doesn't exist.");
     }
 }
 
-GKMap *GKMap_New(void)
-{
-    GKMap *ret = NULL;
-    GK_NEW(ret, GKMap);
+gamemap *
+gamemap_new(void) {
+    gamemap *ret = NULL;
+    GK_NEW(ret, gamemap);
 
-    ret->_id = 0;
-    GKString_Assign(ret->_name, " ");
+    ret->id = 0;
+    string_assign(ret->name, " ");
 
-    ret->_prev = NULL;
-    ret->_next = NULL;
-    ret->_enterPt.x = 0;
-    ret->_enterPt.y = 0;
-    ret->_exitPt.x = 0;
-    ret->_exitPt.y = 0;
+    ret->prev = NULL;
+    ret->next = NULL;
+    ret->enter_point.x = 0;
+    ret->enter_point.y = 0;
+    ret->exit_point.x = 0;
+    ret->exit_point.y = 0;
 
-    ret->_objectCount = 0;
-    GK_MALLOC(ret->_objects, GKMapObject*, ret->_objectCount);
+    ret->object_count = 0;
+    GK_MALLOC(ret->objects, gamemap_object*, ret->object_count);
 
     return (ret);
 }
 
-GKMap *GKMap_NewFromFile(const char *fn)
-{
+gamemap *
+gamemap_new_fromfile(const char *fn) {
     guint16 i = 0;
     FILE *f = NULL;
     char mapobj_config_str[GK_MAX_FILENAME_LEN];
     char background_file_name[GK_MAX_FILENAME_LEN];
 
-    GKMap *ret = NULL;
-    GK_NEW(ret, GKMap);
+    gamemap *ret = NULL;
+    GK_NEW(ret, gamemap);
 
     memset(background_file_name, 0, GK_MAX_FILENAME_LEN);
 
@@ -103,44 +103,44 @@ GKMap *GKMap_NewFromFile(const char *fn)
 
     fscanf(f, "%s\n", background_file_name);
 
-    ret->_ground = GKGround_NewFromFile(background_file_name);
-    fscanf(f, "%d\n", &ret->_objectCount);
+    ret->ground = ground_new_fromfile(background_file_name);
+    fscanf(f, "%d\n", &ret->object_count);
 
-    GK_MALLOC(ret->_objects, GKMapObject*, ret->_objectCount);
+    GK_MALLOC(ret->objects, gamemap_object*, ret->object_count);
 
-    for (i = 0; i < ret->_objectCount; ++i) {
+    for (i = 0; i < ret->object_count; ++i) {
         memset(mapobj_config_str, 0, GK_MAX_FILENAME_LEN);
         fgets(mapobj_config_str, GK_MAX_FILENAME_LEN, f);
-        ret->_objects[i] = GKMapObject_New(mapobj_config_str);
+        ret->objects[i] = gamemapobject_new(mapobj_config_str);
     }
 
     return (ret);
 }
 
-void GKMap_Delete(GKMap *m)
-{
+void
+gamemap_del(gamemap *m) {
     guint16 i;
-    for (i = 0; i < m->_objectCount; ++i) {
-        GKMapObject_Delete(m->_objects[i]);
+    for (i = 0; i < m->object_count; ++i) {
+        gamemapobject_del(m->objects[i]);
     }
 
-    GKGround_Delete(m->_ground);
+    ground_del(m->ground);
     GK_DELETE(m);
 }
 
-void GKMap_Blit(GKMap *m, struct GKSurface *s)
-{
+void
+gamemap_blit(gamemap *m, struct surface_ *s) {
     guint16 i = 0;
 
-    GKGround_Blit(m->_ground, s);
+    ground_blit(m->ground, s);
 
-    for (i = 0; i < m->_objectCount; ++i) {
-        GKMapObject_Blit(m->_objects[i], s);
+    for (i = 0; i < m->object_count; ++i) {
+        gamemapobject_blit(m->objects[i], s);
     }
 }
 
-void GKMap_Append(GKMap *m, GKMap *next)
-{
-    m->_next = next;
-    next->_prev = m;
+void
+gamemap_append(gamemap *m, gamemap *next) {
+    m->next = next;
+    next->prev = m;
 }

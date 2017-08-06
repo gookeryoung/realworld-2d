@@ -5,7 +5,7 @@
 
 GK_BEGIN_HEADER
 
-typedef enum GKCharacterDirectionState{
+typedef enum character_direction_state_{
     GKCHARACTER_DIRECTION_EAST ,
     GKCHARACTER_DIRECTION_SOUTHEAST,
     GKCHARACTER_DIRECTION_SOUTH,
@@ -14,23 +14,23 @@ typedef enum GKCharacterDirectionState{
     GKCHARACTER_DIRECTION_NORTHWEST,
     GKCHARACTER_DIRECTION_NORTH,
     GKCHARACTER_DIRECTION_NORTHEAST
-} GKCharacterDirectionState;
+} character_direction_state;
 
-typedef struct GKCharacter {
-    guint8 _curDirection;
-    guint8 _directions;
-    struct GKSprite **_sprites;
+typedef struct character_ {
+    guint8 cur_direction;
+    guint8 directions;
+    struct sprite_ **sprites;
 
-    struct GKMotion *_motion;
-} GKCharacter;
+    struct motion_ *motion;
+} character;
 
-GKCharacter *GKCharacter_NewFromFile(const char *fn);
-void GKCharacter_Delete(GKCharacter *c);
-void GKCharacter_Blit(GKCharacter *c, struct GKSurface *s);
-void GKCharacter_ChangeState(GKCharacter *c, guint8 state);
-void GKCharacter_MoveTo(GKCharacter *c, gint16 x, gint16 y);
+character *character_new_fromfile(const char *file_name);
+void character_del(character *c);
+void character_blit(character *c, struct surface_ *s);
+void character_changestate(character *c, guint8 state);
+void character_moveto(character *c, gint16 x, gint16 y);
 
-void GKCharacter_SetPosition(GKCharacter *c, gint16 x, gint16 y);
+void character_setposition(character *c, gint16 x, gint16 y);
 
 GK_END_HEADER
 

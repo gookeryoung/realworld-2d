@@ -6,23 +6,23 @@
 
 GK_BEGIN_HEADER
 
-typedef struct GKScreen {
-    struct GKSurface *_surface;
-} GKScreen;
+typedef struct screen_ {
+    struct surface_ *data;
+} screen;
 
-GKScreen *GKScreen_Get(void);
-struct GKSurface *GKScreen_GetSurface(void);
-void GKScreen_Free(void);
-void GKScreen_SetVideoMode(gint32 w, gint32 h, gbool full_screen);
-int GKScreen_Flip(void);
-void GKScreen_ToggleFullScreen(void);
-void GKScreen_SetCaption(const char *caption);
-void GKScreen_SetIcon(struct GKSurface *surface);
-void GKScreen_ShowCursor(void);
-void GKScreen_HideCursor(void);
+screen *screen_get(void);
+void screen_del(void);
+surface *screen_getsurface(void);
+void screen_setvideomode(gint32 w, gint32 h, gbool full_screen);
+int screen_flip(void);
+void screen_togglefullscreen(void);
+void screen_setcaption(const char *caption);
+void screen_seticon(surface *surface);
+void screen_showcursor(void);
+void screen_hidecursor(void);
 
-GK_STATIC_INLINE gint32 GKScreen_GetWidth() { return (GKSurface_GetWidth(GKScreen_GetSurface())); }
-GK_STATIC_INLINE gint32 GKScreen_GetHeight() { return (GKSurface_GetHeight(GKScreen_GetSurface())); }
+GK_STATIC_INLINE gint32 screen_getwidth() { return (surface_getwidth(screen_getsurface())); }
+GK_STATIC_INLINE gint32 screen_getheight() { return (surface_getheight(screen_getsurface())); }
 
 GK_END_HEADER
 

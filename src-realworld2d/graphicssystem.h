@@ -5,15 +5,14 @@
 
 GK_BEGIN_HEADER
 
-typedef struct GKGraphicsSystem {
-    int _fps;
-    struct timer_ *_timer;
-} GKGraphicsSystem;
+typedef struct graphics_system_ {
+    int fps;
+    struct timer_ *timer;
+} graphics_system;
 
-GKGraphicsSystem *GKGraphicsSystem_Get(void);
-void GKGraphicsSystem_Free(void);
-void GKGraphicsSystem_Delay(void);
-guint32 GKGraphicsSystem_GetFPS(void);
+graphics_system *graphicssytem_get(void);
+void graphicssystem_del(void);
+void graphicssystem_delay(void);
 
 GK_END_HEADER
 

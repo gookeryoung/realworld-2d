@@ -1,38 +1,39 @@
 #include "stringutils.h"
 
-static const guint32 _string_default_capacity = 100;
-static const guint32 _string_resize_step = 100;
-static const guint32 _string_max_length = GK_MAX_STRING_LEN;
+static const guint32 _default_capacity = 100;
+static const guint32 _resize_step = 100;
+static const guint32 _max_length = GK_MAX_STRING_LEN;
 
 
-GKString *__Copy(GKString *s) { return GKString_New(strdup(s->_data)); }
+string *_copy(string *s) { return string_new(strdup(s->data)); }
 
-static GKStringInterface __vtbl = {
-    __Copy
+static string_interface __vtbl = {
+    _copy
 };
 
-GKString *GKString_New(const char *str)
-{
-    GKString *ret = NULL;
-    GK_NEW(ret, GKString);
+string *
+string_new(const char *str) {
+    string *ret = NULL;
+    GK_NEW(ret, string);
 
     ret->vtbl = &__vtbl;
-    ret->_length = 0;
+    ret->length = 0;
 
-    ret->_capacity = _string_default_capacity;
-    while (ret->_capacity < strlen(str)) {
-        ret->_capacity += _string_resize_step;
-        if (ret->_capacity > _string_max_length) {
+    ret->capacity = _default_capacity;
+    while (ret->capacity < strlen(str)) {
+        ret->capacity += _resize_step;
+        if (ret->capacity > _max_length) {
             GK_BAILOUT("String is too long");
         }
     }
-    GK_MALLOC(ret->_data, char, ret->_capacity);
+    GK_MALLOC(ret->data, char, ret->capacity);
 
-    strcpy(ret->_data, str);
+    strcpy(ret->data, str);
     return ret;
 }
 
-int GKChar_IsWhiteSpace(char c) {
+int
+_char_is_whitespace(char c) {
     switch (c) {
     case ' ':
     case '\t':
@@ -47,8 +48,8 @@ int GKChar_IsWhiteSpace(char c) {
     }
 }
 
-char *GKString_Trim(char *str)
-{
+char *
+string_trim(char *str) {
     char *ret = NULL;
     int cont = 1;
     int i = 0;
@@ -56,10 +57,8 @@ char *GKString_Trim(char *str)
     int end = 0;
     int len = strlen(str);
 
-    while ((cont) && (i < len - 1))
-    {
-        if (!GKChar_IsWhiteSpace(str[i]))
-        {
+    while ((cont) && (i < len - 1)) {
+        if (!_char_is_whitespace(str[i])) {
             start = i;
             cont = 0;
         }
@@ -68,18 +67,15 @@ char *GKString_Trim(char *str)
 
     cont = 1;
     i = len - 1;
-    while ((cont) && (i >= 0))
-    {
-        if (!GKChar_IsWhiteSpace(str[i]))
-        {
+    while ((cont) && (i >= 0)) {
+        if (!_char_is_whitespace(str[i])) {
             end = i;
             cont = 0;
         }
         i--;
     }
 
-    if (end <= start)
-    {
+    if (end <= start) {
         GK_NEW(ret, char);
         return ret;
     }
@@ -92,31 +88,34 @@ char *GKString_Trim(char *str)
     return ret;
 }
 
-char *GKString_ToLower(char *str)
-{
-    char *ret = GKString_Copy(str);
+char *
+string_tolower(char *str) {
+    char *ret = string_copy(str);
     char *c = ret;
-    for (; *c; ++c)
+
+    for (; *c; ++c) {
         *c = tolower(*c);
+    }
+
     return ret;
 }
 
-char *GKString_ToUpper(char *str)
-{
-    char *ret = GKString_Copy(str);
+char *
+string_toupper(char *str) {
+    char *ret = string_copy(str);
     char *c = ret;
     for (; *c; ++c)
         *c = toupper(*c);
     return ret;
 }
 
-int GKString_Assign(char src_str[], const char *str)
-{
+int
+string_assign(char src_str[], const char *str) {
     return (sprintf(src_str, str));
 }
 
-gint16 GKString_RFindFirst(const char *str, char c)
-{
+gint16
+string_rfindfirst(const char *str, char c) {
     guint16 i = strlen(str) - 1;
     while (i != 0) {
         if (*(str + i) == c) {
@@ -128,43 +127,40 @@ gint16 GKString_RFindFirst(const char *str, char c)
     return (GK_STR_NOTFOUND);
 }
 
-char *GKString_Copy(const char *str) {
+char *
+string_copy(const char *str) {
     char *str_copyed = strdup(str);
     printf("Allocate 1 block of memory for [%s] (instance of [char *]) at %p\n", str, str);
     return str_copyed;
 }
 
-static char *GKConfigPartFromString(char *str, int part)
-{
-    char *wc = GKString_Copy(str);
+static char *
+_configpart_fromstring(char *str, int part) {
+    char *wc = string_copy(str);
     char *eq = strchr(wc, '=');
     char *p = NULL;
 
-    if (eq == NULL)
-    {
+    if (eq == NULL) {
         GK_DELETE(wc);
         return NULL;
     }
 
     eq[0] = 0;
-    if (part == 0)
-    {
-        p = GKString_Trim(wc);
-    }
-    else
-    {
-        p = GKString_Trim(eq + 1);
+    if (part == 0) {
+        p = string_trim(wc);
+    } else {
+        p = string_trim(eq + 1);
     }
     GK_DELETE(wc);
     return p;
 }
 
-char *GKConfigNameFromString(char *str)
-{
-    return GKConfigPartFromString(str, 0);
+char *
+configname_fromstring(char *str) {
+    return _configpart_fromstring(str, 0);
 }
 
-char *GKConfigValueFromString(char *str)
-{
-    return GKConfigPartFromString(str, 1);
+char *
+configvalue_fromstring(char *str) {
+    return _configpart_fromstring(str, 1);
 }
