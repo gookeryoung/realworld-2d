@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-
 #include "event.h"
 
 static event_type

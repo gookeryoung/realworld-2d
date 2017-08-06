@@ -66,13 +66,13 @@ animation_setcurrentframe(animation *a, int cur_frame) {
     a->cur_frame = cur_frame;
 }
 
-void animation_setanimating(animation *a, gbool animating)
-{
+void
+animation_setanimating(animation *a, gbool animating) {
     a->is_animating = animating;
 }
 
-void _animate_loop(animation *a)
-{
+void
+_animate_loop(animation *a) {
     if (a->old_time + a->frame_rate > SDL_GetTicks())
         return;
 
@@ -84,8 +84,8 @@ void _animate_loop(animation *a)
     }
 }
 
-void _animate_singleshot(animation *a)
-{
+void
+_animate_singleshot(animation *a) {
     if (a->old_time + a->frame_rate > SDL_GetTicks() || !a->is_animating)
         return;
 
@@ -97,8 +97,8 @@ void _animate_singleshot(animation *a)
     }
 }
 
-void _animate_singleback(animation *a)
-{
+void
+_animate_singleback(animation *a) {
     if (a->old_time + a->frame_rate > SDL_GetTicks() || !a->is_animating)
         return;
 
@@ -111,8 +111,8 @@ void _animate_singleback(animation *a)
     }
 }
 
-void _animate_singlestay(animation *a)
-{
+void
+_animate_singlestay(animation *a) {
     if (a->old_time + a->frame_rate > SDL_GetTicks() || !a->is_animating)
         return;
 
@@ -125,8 +125,8 @@ void _animate_singlestay(animation *a)
     }
 }
 
-void _animate_oscillate(animation *a)
-{
+void
+_animate_oscillate(animation *a) {
     if (a->old_time + a->frame_rate > SDL_GetTicks() || !a->is_animating)
         return;
 
