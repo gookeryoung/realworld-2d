@@ -5,9 +5,15 @@
 #include "hashtable.h"
 #include "timer.h"
 
-static gbool initialized = GKFALSE;
-static gint32 timerht_size = 50;
-static hashtable *timerht = NULL;
+static gint32 TIMER_HASHTABLE_SIZE = 20;
+
+static struct _timer_container {
+    gbool initialized;
+    hashtable *timers;
+} container = {
+    GKFALSE,
+    NULL
+};
 
 PyObject*
 capi_timer_new(PyObject* self, PyObject* args) {
@@ -16,14 +22,13 @@ capi_timer_new(PyObject* self, PyObject* args) {
     GK_UNUSED_PARAM(self);
     GK_UNUSED_PARAM(args);
 
-    if (!initialized) {
-        timerht = hashtable_new(timerht_size);
-        initialized = GKTRUE;
+    if (!container.initialized) {
+        container.timers = hashtable_new(TIMER_HASHTABLE_SIZE);
+        container.initialized = GKTRUE;
     }
 
     timer *t = timer_new();
-    timer_id = hashtable_insert(timerht, t);
-
+    timer_id = hashtable_insert(container.timers, t);
 
     return Py_BuildValue("i", timer_id);
 }
@@ -39,7 +44,7 @@ capi_timer_remove(PyObject* self, PyObject* args) {
         return NULL;
     }
 
-    result = hashtable_remove(timerht, timer_id, timer_del);
+    result = hashtable_remove(container.timers, timer_id, timer_del);
 
     return PyBool_FromLong(result);
 }
@@ -50,19 +55,19 @@ capi_timer_clearall(PyObject* self, PyObject* args) {
 
     GK_UNUSED_PARAM(self);
 
-    if (initialized) {
-        hashtable_del(timerht, timer_del);
+    if (container.initialized) {
+        hashtable_del(container.timers, timer_del);
         result = GKTRUE;
-        initialized = GKFALSE;
+        container.initialized = GKFALSE;
     }
 
     return PyBool_FromLong(result);
 }
 
 static PyMethodDef capi_timer_methods[] = {
-    { "new", capi_timer_new, METH_NOARGS, "Initialize random generator." },
-    { "remove", capi_timer_remove, METH_VARARGS, "Get a random integer number." },
-    { "clearall", capi_timer_clearall, METH_NOARGS, "Get a random integer number." },
+    { "new", capi_timer_new, METH_NOARGS, "Create a new timer, returns the id of it." },
+    { "remove", capi_timer_remove, METH_VARARGS, "Remove a timer." },
+    { "clearall", capi_timer_clearall, METH_NOARGS, "Clear all timers." },
     { NULL, NULL, 0, NULL }
 };
 

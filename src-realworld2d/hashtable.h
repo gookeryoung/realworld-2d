@@ -7,7 +7,7 @@ GK_BEGIN_HEADER
 
 typedef struct hashnode_ hashnode;  // private implemention
 
-typedef struct hashtable_ {
+typedef struct hashtable_{
     gint32 size;
     gint32 cur_count;
 
@@ -81,6 +81,23 @@ void *hashtable_search(hashtable *ht, gint32 key);
 /// \return         Status of remove action, True if success.
 ///
 gbool hashtable_remove(hashtable *ht, gint32 key, del_func deleter);
+
+
+///
+/// \brief  Get the current count of hashtable.
+///
+/// Typical usage:
+/// \code
+///         success = hashtable_remove(ht, key);
+/// \endcode
+/// \param  ht      Target hashtable.
+/// \param  key     Specified key.
+///
+/// \return         Status of remove action, True if success.
+///
+#define hashtable_count(ht) ((ht)->cur_count)
+
+#define hashtable_size(ht) ((ht)->size)
 
 GK_END_HEADER
 
