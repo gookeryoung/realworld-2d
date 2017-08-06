@@ -5,6 +5,8 @@
 
 GK_BEGIN_HEADER
 
+typedef struct animation_ animation;
+
 typedef enum animation_type_ {
     GKANIMATION_TYPE_LOOP = 0,
     GKANIMATION_TYPE_SINGLE_SHOT,
@@ -14,7 +16,7 @@ typedef enum animation_type_ {
 } animation_type;
 
 typedef struct animation_interface_ {
-    void (*on_animate)(struct animation *a);
+    void (*on_animate)(animation *a);
 } animation_interface;
 
 typedef struct animation_ {
