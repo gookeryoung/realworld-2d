@@ -22,11 +22,13 @@ HEADERS += \
     hashtable.h \
     event.h \
     rect.h \
-    graphics.h
+    graphics.h \
+    animation.h
 
 SOURCES += \
     timer.c \
     hashtable.c \
     event.c \
-    rect.c
+    rect.c \
+    animation.c
 
