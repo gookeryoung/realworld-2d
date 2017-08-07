@@ -6,8 +6,8 @@
 GK_BEGIN_HEADER
 
 typedef struct point2d_ {
-    gint32 x;
-    gint32 y;
+    gint16 x;
+    gint16 y;
 } point2d;
 
 #define point_center2lt(pt,w,h) do{\
@@ -16,15 +16,15 @@ typedef struct point2d_ {
 }while(0)
 
 typedef struct size2d_ {
-    guint32 w;
-    guint32 h;
+    gint16 w;
+    gint16 h;
 } size2d;
 
 typedef struct rect_ {
-    gint32 x;
-    gint32 y;
-    guint32 w;
-    guint32 h;
+    gint16 x;
+    gint16 y;
+    guint16 w;
+    guint16 h;
 } rect;
 
 #define xy_in_rect(x,y,rx,ry,rw,rh) ((x)>=(rx)&&(x)<=(rx)+(rw)&&(y)>=(ry)&&(y)<=(ry)+(rh))

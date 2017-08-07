@@ -54,6 +54,7 @@ capi_timer_clearall(PyObject* self, PyObject* args) {
     gint32 result = GKFALSE;
 
     GK_UNUSED_PARAM(self);
+    GK_UNUSED_PARAM(args);
 
     if (container.initialized) {
         hashtable_del(container.timers, timer_del);
