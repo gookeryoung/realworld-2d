@@ -254,6 +254,11 @@ gbool event_handle_events(event *et) {
         // keyboard events
         if(SDL_KEYDOWN == et->data->type) {
             _handle_keyboard(et, &et->data->key, GKTRUE);
+
+            if (SDLK_ESCAPE == et->data->key.keysym.sym) {
+                GK_MSG("Quit window");
+                return GKFALSE;
+            }
         } else {
             if(SDL_KEYUP == et->data->type) {
                 _handle_keyboard(et, &et->data->key, GKFALSE);

@@ -3,7 +3,7 @@
 
 #include "globaldefs.h"
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 GK_BEGIN_HEADER
 

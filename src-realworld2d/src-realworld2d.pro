@@ -9,6 +9,12 @@ PRECOMPILED_HEADER += precompiled.h
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib -lSDL -lSDL_image -lSDL_ttf
 
+macx: {
+    INCLUDEPATH += \
+        /usr/local/Cellar/python/2.7.13/Frameworks/Python.framework/Versions/2.7/include/python2.7
+    LIBS += -L/usr/local/lib -lpython
+}
+
 HEADERS += \
     realworld2d.h \
     globaldefs.h \
@@ -53,4 +59,8 @@ SOURCES += \
     graphicssystem.c \
     font.c \
     character.c
+
+DISTFILES += \
+    animation.i \
+    rect.i
 

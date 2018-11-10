@@ -10,6 +10,11 @@
 #define REALLOC GK_realloc
 #define FREE GK_Free
 #else                               /* No GC, use built-in functions. */
+//#include <Python.h>
+//#define __MALLOC PyMem_Malloc
+//#define __REALLOC PyMem_Realloc
+//#define __FREE PyMem_Free
+#include <Python.h>
 #define __MALLOC malloc
 #define __REALLOC realloc
 #define __FREE free

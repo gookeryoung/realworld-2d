@@ -45,18 +45,29 @@ surface_new_fromfile(const char *file_name, gbool use_alpha) {
     surface *ret = NULL;
     GK_NEW(ret, surface);
 
+    SDL_Init(SDL_INIT_EVERYTHING);
+
     ret->use_alpha = use_alpha;
 
     loaded = IMG_Load(file_name);
+    GK_ASSERT(loaded);
+
+    GK_MSG("HERE1");
     if (loaded != NULL) {
+        GK_MSG("HERE2");
         ret->data = use_alpha ? SDL_DisplayFormatAlpha(loaded) : SDL_DisplayFormat(loaded);
+//        ret->data = SDL_DisplayFormatAlpha(loaded);
         SDL_FreeSurface(loaded);
+        GK_MSG("HERE3");
     } else {
         GK_BAILOUT("Failed loading surface [%s]: [%s]", file_name, IMG_GetError());
     }
 
-    ret->cx = ret->data->w / 2;
-    ret->cy = ret->data->h / 2;
+    GK_ASSERT(ret->data);
+
+//    ret->cx = ret->data->w / 2;
+//    ret->cy = ret->data->h / 2;
+    GK_MSG("HERE4");
 
     return (ret);
 }

@@ -1,7 +1,7 @@
 #include <Python.h>
 
-#include "scriptengine.h"
 #include "globaldefs.h"
+#include "scriptengine.h"
 #include "hashtable.h"
 #include "timer.h"
 
